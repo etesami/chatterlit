@@ -6,13 +6,13 @@ from utils import get_content, truncate_message, encode_images, init_client, cou
 
 st.title("Chatterlite")
 
-# # --- Authentication ---
-# if not st.session_state.get("authenticated", False):
-#     if st.text_input("Enter password", type="password") == st.secrets.auth.password:
-#         st.session_state.authenticated = True
-#         st.rerun()
-#     st.error("Wrong password")
-#     st.stop()
+# --- Authentication ---
+if not st.session_state.get("authenticated", False):
+    if st.text_input("Enter password", type="password") == st.secrets.auth.password:
+        st.session_state.authenticated = True
+        st.rerun()
+    st.error("Wrong password")
+    st.stop()
 
 
 # --- Model Selection ---
@@ -55,7 +55,8 @@ for i, msg in enumerate(st.session_state.chat_history):
         total_tokens += msg_tokens
         if msg["role"] == "user":
             st.markdown(f"**({msg_tokens} tokens, total: {total_tokens})**")
-            st.markdown(f"> {truncate_message(get_content(msg))}")
+            with st.expander("Show message"):
+                st.markdown(get_content(msg))
         else:
             st.markdown(f"{msg['content']}")
         if i % 2 == 1:  # Divider after each Q&A
