@@ -2,16 +2,35 @@ import streamlit as st
 import pandas as pd
 from models import MODEL_OPTIONS
 from utils import get_content, truncate_message, encode_images, init_client, count_tokens
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
 
 
 st.title("Chatterlite")
 
-# --- Authentication ---
-if not st.session_state.get("authenticated", False):
-    if st.text_input("Enter password", type="password") == st.secrets.auth.password:
-        st.session_state.authenticated = True
-        st.rerun()
-    st.error("Wrong password")
+with open('./auth.config.yml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days']
+)
+
+try:
+    authenticator.login()
+except Exception as e:
+    st.error(e)
+
+
+
+if st.session_state.get('authentication_status') is False:
+    st.error('Username/password is incorrect')
+    st.stop()
+elif st.session_state.get('authentication_status') is None:
+    st.warning('Please enter your username and password')
     st.stop()
 
 
@@ -58,7 +77,7 @@ for i, msg in enumerate(st.session_state.chat_history):
             with st.expander("Show message"):
                 st.markdown(get_content(msg))
         else:
-            st.markdown(f"{msg['content']}")
+            st.markdown(f"{msg['content']}", unsafe_allow_html=True)
         if i % 2 == 1:  # Divider after each Q&A
             st.markdown("---")
 
