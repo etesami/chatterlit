@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from models import MODEL_OPTIONS
-from utils import get_content, truncate_message, encode_images, init_client, count_tokens
+from utils import get_content, truncate_message, init_client, count_tokens, process_uploaded_files
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
@@ -49,7 +49,7 @@ with st.container():
 
 input_container = st.container()
 with input_container:
-    uploaded_images = st.file_uploader("Image(s)", type=["png", "jpg", "jpeg"], accept_multiple_files=True, label_visibility="collapsed")
+    uploaded_images = st.file_uploader("Image(s)", type=["png", "jpg", "jpeg", "txt"], accept_multiple_files=True, label_visibility="collapsed")
     # user_input = st.text_area("You:", height=80)  # smaller height to be compact
     user_input = st.chat_input("You:", accept_file=True)  # smaller height to be compact
         
@@ -57,7 +57,7 @@ client = init_client(selected_model)
 
 if user_input:
     st.session_state.generating = True
-    content = [{"type": "text", "text": user_input.text + (" short answer." if add_short else "")}] + list(encode_images(uploaded_images))
+    content = [{"type": "text", "text": user_input.text + (" short answer." if add_short else "")}] + process_uploaded_files(uploaded_images)
     st.session_state.chat_history = (
         st.session_state.chat_history + [{"role": "user", "content": content}]
         if include_history else [{"role": "user", "content": content}]

@@ -40,14 +40,27 @@ def get_content(message):
 def truncate_message(text, max_length=200):
     return text if len(text) <= max_length else text[:max_length] + "..."
 
-def encode_images(files):
-    for f in files:
-        yield {
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:{f.type};base64,{base64.b64encode(f.read()).decode()}"
+def encode_images(file):
+    yield {
+        "type": "image_url",
+        "image_url": {
+            "url": f"data:{file.type};base64,{base64.b64encode(file.read()).decode()}"
             },
         }
+
+def process_uploaded_files(files):
+    content_blocks = []
+
+    for file in files:
+        if file.type.startswith("image/"):
+            # Process image
+            content_blocks.append(encode_images(file))
+        elif file.name.endswith(".txt"):
+            # Process txt file
+            text = file.read().decode("utf-8", errors="ignore")
+            content_blocks.append({"type": "text", "text": text})
+    
+    return content_blocks
 
 def init_client(model):
     keys = {
