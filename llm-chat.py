@@ -40,7 +40,7 @@ st.session_state.setdefault("generating", False)
 
 with st.container():
     model_names = list(MODEL_OPTIONS)
-    selected_model = st.selectbox("Select Model", model_names, index=model_names.index("gpt-4.1-mini"))
+    selected_model = st.selectbox("Select Model", model_names, index=model_names.index("gpt-5-mini"))
     col_text = st.columns([4,4])
     with col_text[0]:
         add_short = st.checkbox("Shorter", value=True, help="Generate a short answer instead of a detailed one.")
@@ -50,14 +50,14 @@ with st.container():
 input_container = st.container()
 with input_container:
     uploaded_images = st.file_uploader("Image(s)", type=["png", "jpg", "jpeg"], accept_multiple_files=True, label_visibility="collapsed")
-    user_input = st.text_area("You:", height=80)  # smaller height to be compact
-    send_btn = st.button("Send", disabled=st.session_state.generating)
+    # user_input = st.text_area("You:", height=80)  # smaller height to be compact
+    user_input = st.chat_input("You:", accept_file=True)  # smaller height to be compact
         
 client = init_client(selected_model)
 
-if send_btn and user_input:
+if user_input:
     st.session_state.generating = True
-    content = [{"type": "text", "text": user_input + (" short answer." if add_short else "")}] + list(encode_images(uploaded_images))
+    content = [{"type": "text", "text": user_input.text + (" short answer." if add_short else "")}] + list(encode_images(uploaded_images))
     st.session_state.chat_history = (
         st.session_state.chat_history + [{"role": "user", "content": content}]
         if include_history else [{"role": "user", "content": content}]
@@ -79,6 +79,10 @@ for i, msg in enumerate(st.session_state.chat_history):
             with st.expander("Show message"):
                 st.markdown(get_content(msg))
         else:
-            st.markdown(f"{msg['content']}", unsafe_allow_html=True)
+            if i < len(st.session_state.chat_history) - 1:
+                with st.expander(f"Show response {i}"):
+                    st.markdown(get_content(msg))
+            else:
+                st.markdown(f"{msg['content']}", unsafe_allow_html=True)
         if i % 2 == 1:  # Divider after each Q&A
             st.markdown("---")
