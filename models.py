@@ -27,10 +27,12 @@ MODEL_OPTIONS = {
     "o3-pro": "Version of o3 with more compute for better responses.",
     "o3-deep-research": "Our most powerful deep research model.",
     "o3-mini": "A small model alternative to o3.",
+    
+    "gpt-image-1": "Generate images from text prompts.",
 }
     # "claude-opus-4-0": "Most capable and intelligent model yet",
     # "claude-sonnet-4-0": "High intelligence and balanced performance",   
 
 
-
+MODEL_IMAGES = [ "gpt-image-1" ]
 

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from models import MODEL_OPTIONS
+import base64
+from models import MODEL_OPTIONS, MODEL_IMAGES
 from utils import get_content, truncate_message, init_client, count_tokens, process_uploaded_files
 import streamlit_authenticator as stauth
 import yaml
@@ -62,11 +63,20 @@ if user_input:
         st.session_state.chat_history + [{"role": "user", "content": content}]
         if include_history else [{"role": "user", "content": content}]
     )
-    with st.spinner("Generating response..."):
-        reply = client.chat.completions.create(
-            model=selected_model, messages=st.session_state.chat_history
-        ).choices[0].message.content
-    st.session_state.chat_history.append({"role": "assistant", "content": reply})
+    if selected_model not in MODEL_IMAGES:
+        with st.spinner("Generating response..."):
+            reply = client.chat.completions.create(
+                model=selected_model, messages=st.session_state.chat_history
+            ).choices[0].message.content
+        st.session_state.chat_history.append({"role": "assistant", "content": reply})
+    else:
+        with st.spinner("Generating image..."):
+            latest_message = st.session_state.chat_history[-1]["content"][0]["text"]
+            response = client.images.generate(
+                model=selected_model, prompt=latest_message, n=1, size="1024x1024"
+            )
+            image_bytes = base64.b64decode(response.data[0].b64_json)
+        st.session_state.chat_history.append({"role": "assistant", "content": image_bytes, "is_image": True})
     st.session_state.generating = False
 
 total_tokens = 0
@@ -83,6 +93,9 @@ for i, msg in enumerate(st.session_state.chat_history):
                 with st.expander(f"Show response {i}"):
                     st.markdown(get_content(msg))
             else:
-                st.markdown(f"{msg['content']}", unsafe_allow_html=True)
+                if msg.get("is_image"):
+                    st.image(msg["content"])
+                else:
+                    st.markdown(f"{msg['content']}", unsafe_allow_html=True)
         if i % 2 == 1:  # Divider after each Q&A
             st.markdown("---")
