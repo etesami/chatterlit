@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 import base64
-from models import MODEL_OPTIONS, MODEL_IMAGES
-from utils import get_content, truncate_message, init_client, count_tokens, process_uploaded_files
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+from utils import get_content, truncate_message, init_client, count_tokens, process_uploaded_files
+from models import MODEL_OPTIONS, MODEL_IMAGES
+from prompt import PROMPTS
+
 
 st.title("Chatterlite")
 
@@ -42,11 +44,13 @@ st.session_state.setdefault("generating", False)
 with st.container():
     model_names = list(MODEL_OPTIONS)
     selected_model = st.selectbox("Select Model", model_names, index=model_names.index("gpt-5-mini"))
-    col_text = st.columns([4,4])
+    col_text = st.columns([4,4,4])
     with col_text[0]:
         add_short = st.checkbox("Shorter", value=True, help="Generate a short answer instead of a detailed one.")
     with col_text[1]:
         include_history = st.checkbox("History", value=True, help="Include previous messages in the chat history for context.")
+    with col_text[2]:
+        include_interactive = st.checkbox("Interactive", value=True, help="Wait for user input after each response.")
 
 input_container = st.container()
 with input_container:
@@ -58,7 +62,13 @@ client = init_client(selected_model)
 
 if user_input:
     st.session_state.generating = True
-    content = [{"type": "text", "text": user_input.text + (" short answer." if add_short else "")}] + process_uploaded_files(uploaded_images)
+    content = [{
+        "type": "text", 
+        "text": user_input.text + 
+            (" short answer." if add_short else "") + 
+            (PROMPTS["interactive"] if include_interactive else "") +
+            PROMPTS["code_block"]
+    }] + process_uploaded_files(uploaded_images)
     st.session_state.chat_history = (
         st.session_state.chat_history + [{"role": "user", "content": content}]
         if include_history else [{"role": "user", "content": content}]
