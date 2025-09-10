@@ -42,12 +42,12 @@ def truncate_message(text, max_length=200):
     return text if len(text) <= max_length else text[:max_length] + "..."
 
 def encode_images(file):
-    yield {
+    return {
         "type": "image_url",
         "image_url": {
             "url": f"data:{file.type};base64,{base64.b64encode(file.read()).decode()}"
-            },
-        }
+        },
+    }
 
 def process_uploaded_files(files):
     content_blocks = []
