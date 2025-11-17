@@ -54,7 +54,7 @@ with st.container():
 
 input_container = st.container()
 with input_container:
-    uploaded_images = st.file_uploader("Image(s)", type=["png", "jpg", "jpeg", "txt"], accept_multiple_files=True, label_visibility="collapsed")
+    uploaded_images = st.file_uploader("Image(s)", type=["tex", "png", "jpg", "jpeg", "txt"], accept_multiple_files=True, label_visibility="collapsed")
     # user_input = st.text_area("You:", height=80)  # smaller height to be compact
     user_input = st.chat_input("You:", accept_file=True)  # smaller height to be compact
         
