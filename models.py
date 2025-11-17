@@ -6,10 +6,11 @@ MODEL_OPTIONS = {
     "gemini-2.5-pro": "Reasoning over complex problems in code, math, and STEM. Analyzing large documents",
     "gemini-2.5-flash": "Gemni 2.5 Flash model, optimized for speed and cost.",
     
+    "gpt-5.1": "Flagship model for coding and agentic tasks.",
     "gpt-5": "Flagship GPT model for complex tasks.",
     "gpt-5-mini": "Balanced for intelligence, speed, and cost.",
     "gpt-5-nano": "Fastest, most cost-effective GPT-5 model.",
-    "gpt-4.1": "Flagship GPT model for complex tasks.",
+    "gpt-4.1": "For complex tasks.",
     "gpt-4.1-mini": "Balanced for intelligence, speed, and cost.",
     "gpt-4.1-nano": "Fastest, most cost-effective GPT-4.1 model.",
     "gpt-4o": "Fast, intelligent, flexible GPT model.",
