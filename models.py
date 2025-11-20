@@ -3,6 +3,7 @@ MODEL_OPTIONS = {
     "grok-4-latest": "Grok 4 model with advanced reasoning capabilities.",
     
     # Gemini models
+    "gemini-3-pro-preview": "Flagship Gemini 3 Pro model for advanced reasoning and coding tasks.",
     "gemini-2.5-pro": "Reasoning over complex problems in code, math, and STEM. Analyzing large documents",
     "gemini-2.5-flash": "Gemni 2.5 Flash model, optimized for speed and cost.",
     
