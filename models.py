@@ -7,6 +7,7 @@ MODEL_OPTIONS = {
     "gemini-2.5-pro": "Reasoning over complex problems in code, math, and STEM. Analyzing large documents",
     "gemini-2.5-flash": "Gemni 2.5 Flash model, optimized for speed and cost.",
     
+    "gpt-5.2": "The best model for coding and agentic tasks across industries.",
     "gpt-5.1": "Flagship model for coding and agentic tasks.",
     "gpt-5": "Flagship GPT model for complex tasks.",
     "gpt-5-mini": "Balanced for intelligence, speed, and cost.",
@@ -30,11 +31,13 @@ MODEL_OPTIONS = {
     "o3-deep-research": "Our most powerful deep research model.",
     "o3-mini": "A small model alternative to o3.",
     
+    "gpt-image-1.5": "Generate images from text prompts.",
+    "gpt-image-1-mini": "Generate images from text prompts.",
     "gpt-image-1": "Generate images from text prompts.",
 }
     # "claude-opus-4-0": "Most capable and intelligent model yet",
     # "claude-sonnet-4-0": "High intelligence and balanced performance",   
 
 
-MODEL_IMAGES = [ "gpt-image-1" ]
+MODEL_IMAGES = [ "gpt-image-1.5", "gpt-image-1-mini", "gpt-image-1" ]
 

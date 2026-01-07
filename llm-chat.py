@@ -121,18 +121,21 @@ st.sidebar.title("Model & Options")
 
 # Model selection
 model_names = list(MODEL_OPTIONS.keys())
-default_index = model_names.index("gpt-5-mini") if "gpt-5-mini" in model_names else 0
+default_index = model_names.index("gpt-image-1-mini") if "gpt-image-1-mini" in model_names else 0
 selected_model = st.sidebar.selectbox("Select Model", model_names, index=default_index)
 
 # Option toggles
-add_short = st.sidebar.checkbox("Shorter", value=True, help="Generate a short answer instead of a detailed one.")
+include_short = st.sidebar.checkbox("Shorter", value=False, help="Generate a short answer instead of a detailed one.")
 # include_history = st.sidebar.checkbox("History", value=True, help="Include previous messages in the chat history for context.")
-include_interactive = st.sidebar.checkbox("Interactive", value=True, help="Wait for user input after each response.")
+include_interactive = st.sidebar.checkbox("Interactive", value=False, help="Wait for user input after each response.")
+include_jobs = st.sidebar.checkbox("Jobs", value=False, help="Adjust job titles to better fit the job description.")
+include_image = st.sidebar.checkbox("Infographic", value=True, help="Create an infographic from the text.")
+include_code_block = st.sidebar.checkbox("Code Block", value=False, help="Add a code block to the response.")
 
 st.sidebar.divider()
-st.sidebar.title("Chat Sessions")
-if st.sidebar.button("New Session"):
-    create_new_chat_session()
+# st.sidebar.title("Chat Sessions")
+# if st.sidebar.button("New Session"):
+#     create_new_chat_session()
 
 # Display all sessions in the sidebar in reverse chronological order
 for session_id in sorted(st.session_state.sessions.keys(), reverse=True):
@@ -164,10 +167,11 @@ client = init_client(selected_model)
 st.markdown(f"**Model:** {selected_model}")
 
 # Uploaded files / images
-uploaded_files = st.file_uploader("", type=["tex", "png", "jpg", "jpeg", "txt"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("Files/Images", type=["tex", "png", "jpg", "jpeg", "txt"], accept_multiple_files=True)
 
 # Chat input
 prompt = st.chat_input("You:")
+text_piece = None
 
 # When user submits a message
 if prompt:
@@ -175,8 +179,21 @@ if prompt:
 
     # Build the message content in the same shape as the original Chatterlite expects
     # text content is built from the prompt + options/prompts
-    text_piece = prompt + (" short answer." if add_short else "") + (PROMPTS["interactive"] if include_interactive else "") + PROMPTS["code_block"]
+    if include_image:
+        text_piece = PROMPTS["image"] + prompt
 
+    if text_piece is None:
+        text_piece = prompt
+
+    if include_short:
+        text_piece = text_piece + " short answer."
+    if include_interactive:
+        text_piece = text_piece + PROMPTS["interactive"]
+    if include_jobs:
+        text_piece = text_piece + PROMPTS["jobs"]
+    if include_code_block:
+        text_piece = text_piece + PROMPTS["code_block"]
+    
     content = [{"type": "text", "text": text_piece}] + process_uploaded_files(uploaded_files)
 
     # Update messages list depending on include_history
